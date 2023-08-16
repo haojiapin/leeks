@@ -1,0 +1,21 @@
+#端口号配置
+server:
+  port: 8888
+spring:
+  application:
+    name: leeks #服务名称
+  #mysql配置
+  datasource:
+#    url: jdbc:mysql://127.0.0.1:3306/kuailexingqiu?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&createDatabaseIfNotExist=true
+    url: jdbc:mysql://39.106.38.33:3306/kuailexingqiu?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&createDatabaseIfNotExist=true
+    username: root
+    password: Aa18806732121
+    driver-class-name: com.mysql.jdbc.Driver
+
+mybatis-plus:
+  configuration:
+    #sql日志输出控制台
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+
+

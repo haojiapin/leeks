@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>快乐星球8月启航杯比赛排名</title>
+</head>
+<body>
+<h3>快乐星球8月启航杯比赛排名</h3>
+<table>
+    <tr>
+        <th>排名</th>
+        <th>名字</th>
+        <th>收益率</th>
+    </tr>
+    <tr th:each="itme : ${rankings}">
+        <td th:text="${itme.ranking}"></td>
+        <td th:text="${itme.userName}"></td>
+        <td th:text="${itme.income+ '%'}"></td>
+    </tr>
+</table>
+</body>
+</html>

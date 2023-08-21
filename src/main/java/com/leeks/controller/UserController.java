@@ -10,10 +10,8 @@ import com.leeks.entity.User;
 import com.leeks.service.MoneyService;
 import com.leeks.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.thymeleaf.TemplateEngine;
@@ -57,23 +55,39 @@ public class UserController extends ApiController {
         List<User> userList = userService.list(new QueryWrapper<User>().orderByAsc("id"));
         List<Ranking> rankingList = new ArrayList<>();
         for (User user : userList) {
+            //初始收益
+            double d = 0.00;
             Ranking ranking = new Ranking();
             ranking.setUserName(user.getName());
-            Money moneyStart = moneyService.getOne(new QueryWrapper<Money>().eq("user_id", user.getId()).orderByAsc("id").last("limit 1"));
-            if (moneyStart == null) {
-                ranking.setIncome(0.00);
+
+            List<Money> moneyStartList = moneyService.list(new QueryWrapper<Money>().eq("user_id", user.getId()).orderByAsc("id"));
+            if (moneyStartList == null) {
+                ranking.setIncome(d);
                 rankingList.add(ranking);
             } else {
-                Money moneyEnd = moneyService.getOne(new QueryWrapper<Money>().eq("user_id", user.getId()).orderByDesc("id").last("limit 1"));
-                Double nowMoneyStart = moneyStart.getNowMoney();
-                Double nowMoneyEnd = moneyEnd.getNowMoney();
-                //加钱逻辑
-                double beforeMoney = moneyDao.selectBeforeMoneyCount(user.getId());
-                nowMoneyStart = nowMoneyStart + beforeMoney;
+                int number = moneyStartList.size() - 1;
+                for (int i = 0; i < moneyStartList.size(); i++) {
+                    //确定不是最后一次
+                    if (i + 1 <= number) {
 
+                        //最新
+                        Money moneyNew = moneyStartList.get(i);
+                        Double nowMoneyNew = moneyNew.getNowMoney();
 
-                //收益率 = (结束金额 - 起始金额) / 起始金额
-                double d = (nowMoneyEnd - nowMoneyStart) / nowMoneyStart * 100;
+                        //下一次
+                        Money money = moneyStartList.get(i + 1);
+                        Double nowMoney = money.getNowMoney();
+                        Double beforeMoney = money.getBeforeMoney();
+
+                        //资金变动逻辑
+                        nowMoneyNew = nowMoneyNew + beforeMoney;
+
+                        //每次收益率
+                        //收益率 = (结束金额 - 起始金额) / 起始金额
+                        d += (nowMoney - nowMoneyNew) / nowMoneyNew * 100;
+                    }
+
+                }
 
                 DecimalFormat df = new DecimalFormat("#.00");
                 String formattedValue = df.format(d);
